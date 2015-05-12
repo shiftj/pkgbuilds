@@ -1,4 +1,6 @@
-# chen bin <chenbin.sh AT gmail DOT com>
+# Maintainer: chen bin <chenbin.sh AT gmail DOT com>
+# Maintainer: shiftj github.com/shiftj
+
 pkgname=pngnq-svn
 pkgver=20080502
 pkgrel=1
@@ -12,11 +14,11 @@ makedepends=('subversion')
 provides=('pngnq')
 conflicts=('pngnq')
 replaces=('pngnq-svn')
-md5sums=()
+md5sums=('d93ae0d9305663da6eb1461604bc2be3')
 _svnmod="pngnq"
 _svntrunk="https://pngnq.svn.sourceforge.net/svnroot/pngnq"
 build() {
-	cd $startdir/src
+	cd $srcdir
 	mkdir -p ~/.subversion; touch ~/.subversion/servers
 	msg "Connecting to $_svnmod.sourceforge.net SVN server...."
 	svn co $_svntrunk $_svnmod
@@ -31,7 +33,7 @@ build() {
 	./configure --prefix=/usr
 	msg "Starting build process."
 	make || return 1
-	mkdir -p $startdir/pkg/usr/bin/
-	cp pngcomp $startdir/pkg/usr/bin/pngcomp
-	cp pngnq $startdir/pkg/usr/bin/pngnq
+	mkdir -p $pkgdir/usr/bin/
+	cp pngcomp $pkgdir/usr/bin/pngcomp
+	cp pngnq $pkgdir/usr/bin/pngnq
 }
