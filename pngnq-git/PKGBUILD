@@ -35,7 +35,7 @@ package() {
 	cd ${pkgname%-git}
 
 	msg2 'Installing...'
-	make DESTDIR="$pkgdir" install
+	make DESTDIR="${pkgdir}" install
 
 	install -Dm644 AUTHORS \
 		${pkgdir}/usr/share/doc/pngnq/AUTHORS
@@ -45,16 +45,16 @@ package() {
 		${pkgdir}/usr/share/doc/pngnq/ChangeLog
 	install -Dm644 INSTALL \
 		${pkgdir}/usr/share/doc/pngnq/INSTALL
-	install -Dm644 LICENSE \
-		${pkgdir}/usr/share/licenses/pngnq/LICENSE
-	install -Dm644 NEWS \
-		${pkgdir}/usr/share/doc/pngnq/NEWS
 	install -Dm644 README \
 		${pkgdir}/usr/share/doc/pngnq/README
 	install -Dm644 README.pngcomp \
 		${pkgdir}/usr/share/doc/pngnq/README.pngcomp
+	install -Dm644 NEWS \
+		${pkgdir}/usr/share/doc/pngnq/NEWS
+	install -Dm644 ${srcdir}/pngnq.desktop \
+		${pkgdir}/usr/share/applications/pngnq.desktop
 
 	msg2 'Cleaning up pkgdir...'
-	find "$pkgdir" -type d -name .git -exec rm -r '{}' +
-	find "$pkgdir" -type f -name .gitignore -exec rm -r '{}' +
+	find "${pkgdir}" -type d -name .git -exec rm -r '{}' +
+	find "${pkgdir}" -type f -name .gitignore -exec rm -r '{}' +
 }
