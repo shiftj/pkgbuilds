@@ -8,5 +8,6 @@
 # AUR metadata
 .AURINFO
 .SRCINFO
+pngnq/
 pkg/
 src/
