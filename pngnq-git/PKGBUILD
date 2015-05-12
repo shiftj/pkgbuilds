@@ -9,7 +9,7 @@ source=('pngnq.desktop' 'git://github.com/shiftj/pngnq.git')
 #source=('pngnq.desktop' 'git://github.com/ljbade/pngnq.git')
 license=('Attribution-Noncommercial-Share Alike 2.5 Australia')
 depends=('zlib' 'libpng')
-makedepends=('subversion')
+makedepends=('automake' 'autoconf')
 provides=('pngnq')
 conflicts=('pngnq')
 replaces=('pngnq-svn')
@@ -23,6 +23,8 @@ pkgver() {
 
 prepare() {
 	cd ${pkgname%-git}
+
+
 	# org:
 	#sed "35i#include <zlib.h>" -i src/rwpng.c
 
@@ -34,6 +36,10 @@ prepare() {
 
 build() {
 	cd ${pkgname%-git}
+	aclocal
+	autoheader
+	autoconf
+	automake --add-missing
 	./configure --prefix=/usr
 	msg "Starting build process."
 	make || return 1
