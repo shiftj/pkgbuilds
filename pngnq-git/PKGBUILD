@@ -20,10 +20,6 @@ pkgver() {
     printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
-prepare() {
-	cd ${pkgname%-git}
-}
-
 build() {
 	cd ${pkgname%-git}
 	aclocal
