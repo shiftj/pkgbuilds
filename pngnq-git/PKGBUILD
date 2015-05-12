@@ -39,8 +39,6 @@ package() {
 
 	install -Dm644 AUTHORS \
 		${pkgdir}/usr/share/doc/pngnq/AUTHORS
-	install -Dm644 COPYING \
-		${pkgdir}/usr/share/licenses/pngnq/COPYING
 	install -Dm644 ChangeLog \
 		${pkgdir}/usr/share/doc/pngnq/ChangeLog
 	install -Dm644 INSTALL \
@@ -51,6 +49,10 @@ package() {
 		${pkgdir}/usr/share/doc/pngnq/README.pngcomp
 	install -Dm644 NEWS \
 		${pkgdir}/usr/share/doc/pngnq/NEWS
+
+	install -Dm644 COPYING \
+		${pkgdir}/usr/share/licenses/pngnq/COPYING
+
 	install -Dm644 ${srcdir}/pngnq.desktop \
 		${pkgdir}/usr/share/applications/pngnq.desktop
 
