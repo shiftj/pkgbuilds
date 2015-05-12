@@ -1,0 +1,56 @@
+
+pkgname=pngnq-git
+pkgver=r42.273bdb1
+pkgrel=1
+pkgdesc="A tool for quantizing PNG images in RGBA format - svn version - my build from git" 
+arch=('i686' 'x86_64')
+url="http://pngnq.sourceforge.net/"
+source=('pngnq.desktop' 'git://github.com/shiftj/pngnq.git')
+#source=('pngnq.desktop' 'git://github.com/ljbade/pngnq.git')
+license=('Attribution-Noncommercial-Share Alike 2.5 Australia')
+depends=('zlib' 'libpng')
+makedepends=('subversion')
+provides=('pngnq')
+conflicts=('pngnq')
+replaces=('pngnq-svn')
+md5sums=('d93ae0d9305663da6eb1461604bc2be3'
+         'SKIP')
+
+pkgver() {
+  cd ${pkgname%-git}
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+	cd ${pkgname%-git}
+	# org:
+	#sed "35i#include <zlib.h>" -i src/rwpng.c
+
+	# svn:
+	#ln -sf `\ls /usr/share/automake*/install-sh` install-sh
+	#ln -sf `\ls /usr/share/automake*/missing` missing
+	#ln -sf `\ls /usr/share/automake*/depcomp` depcomp
+}
+
+build() {
+	cd ${pkgname%-git}
+	./configure --prefix=/usr
+	msg "Starting build process."
+	make || return 1
+}
+
+package() {
+	cd ${pkgname%-git}
+
+	# svn:
+	#mkdir -p $startdir/pkg/usr/bin/
+	#cp pngcomp $startdir/pkg/usr/bin/pngcomp
+	#cp pngnq $startdir/pkg/usr/bin/pngnq
+
+	msg2 'Installing...'
+	make DESTDIR="$pkgdir" install
+
+	msg2 'Cleaning up pkgdir...'
+	find "$pkgdir" -type d -name .git -exec rm -r '{}' +
+	find "$pkgdir" -type f -name .gitignore -exec rm -r '{}' +
+}
