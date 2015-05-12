@@ -1,0 +1,10 @@
+[Desktop Entry]
+Categories=Graphics;
+Type=Application
+Encoding=UTF-8
+Exec=pngnq
+Name=pngnq - Tool for quantizing PNG images in RGBA format.
+GenericName=Tool for quantizing PNG images in RGBA format.
+Icon=pngnq
+MimeType=image/png
+
