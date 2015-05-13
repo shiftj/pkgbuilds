@@ -1,4 +1,4 @@
-Description
+# Description
 pngnq-s9 is a modified version of pngnq, the neural network colour quantizer for png images.
 
 Like pngnq, pngnq-s9 takes a full 32 bit RGBA png image, selects a palette of up to 256 colours, and then redraws the image in 8 bit indexed mode. The resulting image can be up to 70% smaller than the original.
@@ -10,7 +10,7 @@ Currently, pngnq-s9 is in alpha release. The .tar.gz file on this page is known 
 For Windows users, we now have a binary release, pngnq-s9-2.0.1-win32.zip, that should run as is on most modern Windows machines. (If you try it, please let us know!)
 
 
-Features
+#Features
 
     Quantizes 32 bit RGBA png images down to 256 colours or fewer, just like pngnq.
     selectable internal colour space (either RGBA or YUVA)
