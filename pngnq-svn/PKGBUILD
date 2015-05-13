@@ -1,38 +1,68 @@
 # Maintainer: shiftj github.com/shiftj
 
 pkgname=pngnq-svn
-pkgver=20080502
+pkgver=r30
 pkgrel=1
 pkgdesc="A tool for quantizing PNG images in RGBA format - svn version" 
 arch=('i686' 'x86_64')
 url="http://pngnq.sourceforge.net/"
-source=(pngnq.desktop)
+#source=('pngnq.desktop' 'svn+https://pngnq.svn.sourceforge.net/svnroot/pngnq')
+source=('pngnq.desktop' 'pngnq::svn+https://svn.code.sf.net/p/pngnq/code/')
 license=('Attribution-Noncommercial-Share Alike 2.5 Australia')
 depends=('zlib' 'libpng')
 makedepends=('subversion')
 provides=('pngnq')
 conflicts=('pngnq')
 replaces=('pngnq-svn')
-md5sums=('d93ae0d9305663da6eb1461604bc2be3')
-_svnmod="pngnq"
-_svntrunk="https://pngnq.svn.sourceforge.net/svnroot/pngnq"
+md5sums=('d93ae0d9305663da6eb1461604bc2be3'
+         'SKIP')
+
+pkgver() {
+  cd ${pkgname%-svn}
+  local ver="$(svnversion)"
+  printf "r%s" "${ver//[[:alpha:]]}"
+}
+
+prepare() {
+	cd ${pkgname%-svn}
+	sed "35i#include <zlib.h>" -i src/rwpng.c
+}
+
 build() {
-	cd $srcdir
-	mkdir -p ~/.subversion; touch ~/.subversion/servers
-	msg "Connecting to $_svnmod.sourceforge.net SVN server...."
-	svn co $_svntrunk $_svnmod
+	cd ${pkgname%-svn}
 
-	msg "SVN checkout done or server timeout"
-	msg "Starting make..."
+	aclocal
+	autoheader
+	autoconf
+	automake --add-missing
 
-	cd $_svnmod
-	ln -sf `\ls /usr/share/automake*/install-sh` install-sh
-	ln -sf `\ls /usr/share/automake*/missing` missing
-	ln -sf `\ls /usr/share/automake*/depcomp` depcomp
 	./configure --prefix=/usr
 	msg "Starting build process."
 	make || return 1
-	mkdir -p $pkgdir/usr/bin/
-	cp pngcomp $pkgdir/usr/bin/pngcomp
-	cp pngnq $pkgdir/usr/bin/pngnq
+}
+
+package() {
+	cd ${pkgname%-svn}
+
+	msg2 'Installing...'
+	make DESTDIR="${pkgdir}" install
+
+	install -Dm644 AUTHORS \
+		${pkgdir}/usr/share/doc/pngnq/AUTHORS
+	install -Dm644 ChangeLog \
+		${pkgdir}/usr/share/doc/pngnq/ChangeLog
+	install -Dm644 INSTALL \
+		${pkgdir}/usr/share/doc/pngnq/INSTALL
+	install -Dm644 README \
+		${pkgdir}/usr/share/doc/pngnq/README
+	install -Dm644 README.pngcomp \
+		${pkgdir}/usr/share/doc/pngnq/README.pngcomp
+	install -Dm644 NEWS \
+		${pkgdir}/usr/share/doc/pngnq/NEWS
+
+	install -Dm644 COPYING \
+		${pkgdir}/usr/share/licenses/pngnq/COPYING
+
+	install -Dm644 ${srcdir}/pngnq.desktop \
+		${pkgdir}/usr/share/applications/pngnq.desktop
 }
