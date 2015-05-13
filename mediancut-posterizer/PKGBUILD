@@ -1,0 +1,33 @@
+# Maintainer: shiftj github.com/shiftj
+
+pkgname=mediancut-posterizer
+pkgver=r74.5103c52
+pkgrel=1
+pkgdesc="Lossy PNG compressor for RGBA PNGs"
+arch=('i686' 'x86_64')
+url="https://github.com/pornel/mediancut-posterizer"
+license=(GPL3)
+depends=('libpng')
+makedepends=('git')
+provides=(posterize)
+source=('git://github.com/pornel/mediancut-posterizer.git')
+md5sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname}
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+
+build() {
+  cd "$srcdir/$pkgname"
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname"
+  install -Dm755 posterize ${pkgdir}/usr/bin/posterize
+}
+
+# vim:set ts=2 sw=2 et:
+
