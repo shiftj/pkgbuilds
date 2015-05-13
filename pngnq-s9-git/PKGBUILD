@@ -1,0 +1,53 @@
+# Maintainer: shiftj github.com/shiftj
+
+pkgname=pngnq-s9
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="A modified pngnq: convert png images to 256 colours."
+arch=('i686' 'x86_64')
+url="http://sourceforge.net/projects/pngnqs9/"
+license=()
+depends=('libpng' 'zlib')
+source=("http://sourceforge.net/projects/pngnqs9/files/$pkgname-$pkgver.tar.gz" "README.md")
+md5sums=('20e185297245f306dc6223f816668bd6'
+         '9c55640262ed03ac9424ab02214cd8a8')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i 's/pngcomp$(EXEEXT)/pngcomp-s9$(EXEEXT)/' src/Makefile.in
+  sed -i 's/pngcomp_/pngcomp_s9_/g' src/Makefile.in
+  sed -i 's/pngnq-s9 pngcomp/pngnq-s9 pngcomp-s9/' src/Makefile.am
+  sed -i 's/pngcomp_/pngcomp_s9_/g' src/Makefile.am
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  make DESTDIR="${pkgdir}" install
+
+	install -Dm644 AUTHORS \
+		${pkgdir}/usr/share/doc/pngnq-s9/AUTHORS
+	install -Dm644 ChangeLog \
+		${pkgdir}/usr/share/doc/pngnq-s9/ChangeLog
+	install -Dm644 INSTALL \
+		${pkgdir}/usr/share/doc/pngnq-s9/INSTALL
+	install -Dm644 README \
+		${pkgdir}/usr/share/doc/pngnq-s9/README
+	install -Dm644 NEWS \
+		${pkgdir}/usr/share/doc/pngnq-s9/NEWS
+
+	install -Dm644 COPYING \
+		${pkgdir}/usr/share/licenses/pngnq-s9/COPYING
+
+  install -Dm644 ../README.md ${pkgdir}/usr/share/doc/pngnq-s9/README.md
+}
+
+# vim:set ts=2 sw=2 et:
+
