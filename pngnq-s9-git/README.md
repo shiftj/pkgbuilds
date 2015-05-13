@@ -2,7 +2,7 @@
 A modified pngnq: convert png images to 256 colours.
 [Source](http://sourceforge.net/projects/pngnqs9/)
 
-#Description
+##Description
 pngnq-s9 is a modified version of pngnq, the neural network colour quantizer for png images.
 
 Like pngnq, pngnq-s9 takes a full 32 bit RGBA png image, selects a palette of up to 256 colours, and 
@@ -20,7 +20,7 @@ systems, including Cygwin. The only external dependencies are libpng and zlib.
 For Windows users, we now have a binary release, pngnq-s9-2.0.1-win32.zip, that should run as is on 
 most modern Windows machines. (If you try it, please let us know!)
 
-#Features
+##Features
 - Quantizes 32 bit RGBA png images down to 256 colours or fewer, just like pngnq.
 - selectable internal colour space (either RGBA or YUVA)
 - use different sensitivities for each colour component
