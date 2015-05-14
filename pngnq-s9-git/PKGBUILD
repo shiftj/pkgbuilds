@@ -10,7 +10,7 @@ license=()
 depends=('libpng' 'zlib')
 source=("http://sourceforge.net/projects/pngnqs9/files/$pkgname-$pkgver.tar.gz" "README.md")
 md5sums=('20e185297245f306dc6223f816668bd6'
-         '9c55640262ed03ac9424ab02214cd8a8')
+         '211b817050fea843a569c4b0458b7971')
 
 prepare() {
   cd "$srcdir/$pkgname-$pkgver"
