@@ -21,8 +21,8 @@ pkgver() {
 }
 
 build() {
-	#cd ${pkgname%-git}
-  cd "$srcdir/$pkgname"
+	cd ${pkgname%-git}
+  #cd "$srcdir/$pkgname"
 
 	#aclocal
 	#autoheader
@@ -35,8 +35,8 @@ build() {
 }
 
 package() {
-	#cd ${pkgname%-git}
-  cd "$srcdir/$pkgname"
+	cd ${pkgname%-git}
+  #cd "$srcdir/$pkgname"
 
   install -Dm755 program ${pkgdir}/usr/bin/program
 
