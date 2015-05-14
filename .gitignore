@@ -9,6 +9,9 @@
 .AURINFO
 .SRCINFO
 pngnq/
+pngwolf/
 pkg/
 src/
+
 .flagged
+*.7z
