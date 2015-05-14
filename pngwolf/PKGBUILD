@@ -7,8 +7,8 @@ pkgdesc="pngwolf uses a genetic algorithm to find PNG scanline filter combinatio
 arch=('i686' 'x86_64')
 url="http://bjoern.hoehrmann.de/pngwolf/"
 license=('custom')
-depends=('zlib')
-makedepends=('git' 'zlib')
+depends=('')
+makedepends=('git' 'zlib' 'sed')
 provides=('pngwolf')
 conflicts=('pngwolf')
 replaces=('pngwolf')
@@ -25,12 +25,23 @@ pkgver() {
 }
 
 prepare() {
-  mkdir -p pngwolf/7zip
-  cp -r CPP  pngwolf/7zip/CPP
-  cp -r C pngwolf/7zip/C
-  cp -r Asm pngwolf/7zip/Asm
-  ln -s ../galib247 pngwolf/galib
-  ln -s ../zlib-1.2.8 pngwolf/zlib
+  cd ${pkgname%-git}
+
+  mkdir -p 7zip
+  ln -s ../../CPP  7zip/CPP
+  ln -s ../../C 7zip/C
+  ln -s ../../Asm 7zip/Asm
+  ln -s ../galib247 galib
+  ln -s ../zlib-1.2.8 zlib
+  
+  # fix 'different line endings' error / 7zip src has windows (CRLF) line endings
+  # this adds sed makedepend
+  # \x0d is CRLF end of line
+  sed -i 's/\x0d$//' 7zip/C/Alloc.h
+  sed -i 's/\x0d$//' 7zip/C/Alloc.c
+  sed -i 's/\x0d$//' 7zip/CPP/7zip/Common/StreamObjects.cpp
+ 
+  patch -p 1 -d .. < sevenzip920.patch
 
   # fix pngwolf compilation error
   sed -i \
@@ -38,46 +49,28 @@ prepare() {
     -e 's/mutator(/this->mutator(/g' \
     -e 's/comparator(/this->comparator(/g' \
     -e 's/crossover(/this->crossover(/g' \
-    galib247/ga/GA?DArrayGenome.C
+    ../galib247/ga/GA?DArrayGenome.C
 
-
-  cd ${pkgname%-git}
-
-  # fix 'different line endings' error / 7zip src has windows (CRLF) line endings
-  tr -d "\r" < 7zip/C/Alloc.h > tmp
-  mv tmp 7zip/C/Alloc.h
-  tr -d "\r" < 7zip/C/Alloc.c > tmp
-  mv tmp 7zip/C/Alloc.c
-  tr -d "\r" < 7zip/CPP/7zip/Common/StreamObjects.cpp > tmp
-  mv tmp 7zip/CPP/7zip/Common/StreamObjects.cpp
-
-  patch -p 0 < sevenzip920.patch
-
-  cmake .
-
+  mkdir -p build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 }
 
 build() {
-	cd ${pkgname%-git}
-
-	#aclocal
-	#autoheader
-	#autoconf
-	#automake --add-missing
-	#./configure --prefix=/usr
+	cd ${pkgname%-git}/build
 
 	msg "Starting build process."
   make CXXFLAGS="${CXXFLAGS}" || return 1
 }
 
 package() {
-  cd ${pkgname%-git}
+  cd ${pkgname%-git}/build
 
 	msg2 'Installing...'
 
-  install -Dm755 ${pkgname%-git} ${pkgdir}/usr/bin/${pkgname%-git}
+	install -Dm755 ${pkgname%-git} ${pkgdir}/usr/bin/${pkgname%-git}
 
-	install -Dm644 README ${pkgdir}/usr/share/doc/${pkgname%-git}/README
+	install -Dm644 ../README ${pkgdir}/usr/share/doc/${pkgname%-git}/README
 }
 
 # vim:set ts=2 sw=2 et:
