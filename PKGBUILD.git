@@ -1,0 +1,64 @@
+# Maintainer: shiftj github.com/shiftj
+
+pkgname=
+pkgver=
+pkgrel=1
+pkgdesc=""
+arch=('i686' 'x86_64')
+url=""
+license=('')
+depends=('')
+makedepends=('git')
+provides=('')
+conflicts=('')
+replaces=('')
+source=('git://')
+md5sums=('SKIP')
+
+pkgver() {
+  cd ${pkgname}
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+	#cd ${pkgname%-git}
+  cd "$srcdir/$pkgname"
+
+	#aclocal
+	#autoheader
+	#autoconf
+	#automake --add-missing
+	./configure --prefix=/usr
+
+	msg "Starting build process."
+	make || return 1
+}
+
+package() {
+	#cd ${pkgname%-git}
+  cd "$srcdir/$pkgname"
+
+  install -Dm755 program ${pkgdir}/usr/bin/program
+
+	msg2 'Installing...'
+
+	make DESTDIR="${pkgdir}" install
+
+	install -Dm644 INSTALL ${pkgdir}/usr/share/doc/pngnq/INSTALL
+	install -Dm644 README \
+		${pkgdir}/usr/share/doc/pngnq/README
+	install -Dm644 README.pngcomp \
+		${pkgdir}/usr/share/doc/pngnq/README.pngcomp
+
+	install -Dm644 LICENSE \
+		${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+
+	install -Dm644 ${srcdir}/pngnq.desktop \
+		${pkgdir}/usr/share/applications/pngnq.desktop
+
+	msg2 'Cleaning up pkgdir...'
+	find "${pkgdir}" -type d -name .git -exec rm -r '{}' +
+	find "${pkgdir}" -type f -name .gitignore -exec rm -r '{}' +
+}
+
+# vim:set ts=2 sw=2 et:
