@@ -1,24 +1,25 @@
 # Maintainer: shiftj github.com/shiftj
 
 pkgname=pngwolf-git
-pkgver=r30.ae3811d
+pkgver=r14.ff9764b
 pkgrel=1
 pkgdesc="pngwolf uses a genetic algorithm to find PNG scanline filter combinations that compress well (compiled using 7zip 9.20)"
 arch=('i686' 'x86_64')
 url="http://bjoern.hoehrmann.de/pngwolf/"
 license=('custom')
 depends=('')
-makedepends=('git' 'zlib' 'sed')
+makedepends=('git' 'sed')
 provides=('pngwolf')
 conflicts=('pngwolf')
 replaces=('pngwolf')
 #source=('http://www.7-zip.org/a/7z920.tar.bz2' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf')
-#source=('http://www.7-zip.org/a/7z938-src.7z' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf')
-source=('http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/jibsen/pngwolf' 'git://github.com/google/zopfli/')
-md5sums=('2b6a28fd06d4c7c4d0bb39c92b2b376c'
+source=('http://www.7-zip.org/a/7z938-src.7z' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf' 'sevenzip.patch')
+#source=('http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/jibsen/pngwolf' 'git://github.com/google/zopfli/')
+md5sums=('5e8e5b3777239d44852556899e41b973'
+         '2b6a28fd06d4c7c4d0bb39c92b2b376c'
          '44d667c142d7cda120332623eab69f40'
          'SKIP'
-         'SKIP')
+         '3cb16e20bff448e5925500eb1dc2df8f')
 
 pkgver() {
   cd ${pkgname%-git}
@@ -28,25 +29,20 @@ pkgver() {
 prepare() {
   cd ${pkgname%-git}
 
-  #mkdir -p 7zip
-  #ln -s ../../CPP  7zip/CPP
-  #ln -s ../../C 7zip/C
-  #ln -s ../../Asm 7zip/Asm
+  mkdir -p 7zip
+  ln -s ../../CPP  7zip/CPP
+  ln -s ../../C 7zip/C
   ln -s ../galib247 galib
-  ln -s ../zopfli zopfli
   ln -s ../zlib-1.2.8 zlib
   
   # fix 'different line endings' error / 7zip src has windows (CRLF) line endings
   # this adds sed makedepend
-  # chmod needed for 7zip 9.38, add write permissions
-  #chmod +w 7zip/C/Alloc.{h,c} 7zip/CPP/7zip/Common/StreamObjects.cpp
+  # chmod needed for 7zip 9.38, adds write permissions
+  chmod +w 7zip/CPP/7zip/Common/StreamObjects.cpp
   # \x0d is CRLF end of line
-  #sed -i 's/\x0d$//' 7zip/C/Alloc.h
-  #sed -i 's/\x0d$//' 7zip/C/Alloc.c
-  #sed -i 's/\x0d$//' 7zip/CPP/7zip/Common/StreamObjects.cpp
+  sed -i 's/\x0d$//' 7zip/CPP/7zip/Common/StreamObjects.cpp
  
-  #sed -i '/StreamObjects/,/^STDMETH/d' sevenzip920.patch
-  #patch -N -p 1 -d .. < sevenzip920.patch
+  patch -p 1 -d .. < ../sevenzip.patch
 
   # fix galib247 compilation error
   sed -i \
@@ -55,10 +51,6 @@ prepare() {
     -e 's/comparator(/this->comparator(/g' \
     -e 's/crossover(/this->crossover(/g' \
     ../galib247/ga/GA?DArrayGenome.C
-
-  # Remove references to Visual Studio precompiled headers
-  #msg2 "Removing references to Visual Studio precompiled headers..."
-  #grep -lR '#include "StdAfx.h"' "7zip/CPP"  | xargs -I % bash -c "sed -i 's/#include \"StdAfx.h\"//g' %;"
 
   msg2 "Running cmake..."
   mkdir -p build
