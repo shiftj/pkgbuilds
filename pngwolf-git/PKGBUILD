@@ -1,0 +1,73 @@
+# Maintainer: shiftj github.com/shiftj
+
+pkgname=pngwolf-git
+pkgver=r14.ff9764b
+pkgrel=1
+pkgdesc="pngwolf uses a genetic algorithm to find PNG scanline filter combinations that compress well (compiled using 7zip 9.20)"
+arch=('i686' 'x86_64')
+url="http://bjoern.hoehrmann.de/pngwolf/"
+license=('custom')
+depends=('')
+makedepends=('git' 'sed')
+provides=('pngwolf')
+source=('http://www.7-zip.org/a/7z938-src.7z' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf' 'sevenzip938.patch')
+md5sums=('5e8e5b3777239d44852556899e41b973'
+         '2b6a28fd06d4c7c4d0bb39c92b2b376c'
+         '44d667c142d7cda120332623eab69f40'
+         'SKIP'
+         '3cb16e20bff448e5925500eb1dc2df8f')
+
+pkgver() {
+  cd ${pkgname%-git}
+  printf  "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd ${pkgname%-git}
+
+  mkdir -p 7zip
+  ln -s ../../CPP  7zip/CPP
+  ln -s ../../C 7zip/C
+  ln -s ../galib247 galib
+  ln -s ../zlib-1.2.8 zlib
+  
+  # fix 'different line endings' error / 7zip src has windows (CRLF) line endings
+  # chmod needed for 7zip 9.38, adds write permissions
+  chmod +w 7zip/CPP/7zip/Common/StreamObjects.cpp
+  # \x0d is CRLF end of line
+  sed -i 's/\x0d$//' 7zip/CPP/7zip/Common/StreamObjects.cpp
+ 
+  patch -p 1 -d .. < ../sevenzip938.patch
+
+  # fix galib247 compilation error
+  sed -i \
+    -e 's/initializer(/this->initializer(/g' \
+    -e 's/mutator(/this->mutator(/g' \
+    -e 's/comparator(/this->comparator(/g' \
+    -e 's/crossover(/this->crossover(/g' \
+    ../galib247/ga/GA?DArrayGenome.C
+
+  msg2 "Running cmake..."
+  mkdir -p build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+}
+
+build() {
+	cd ${pkgname%-git}/build
+
+	msg "Starting build process."
+  make CXXFLAGS="${CXXFLAGS}" || return 1
+}
+
+package() {
+  cd ${pkgname%-git}/build
+
+	msg2 'Installing...'
+
+	install -Dm755 ${pkgname%-git} ${pkgdir}/usr/bin/${pkgname%-git}
+
+	install -Dm644 ../README ${pkgdir}/usr/share/doc/${pkgname%-git}/README
+}
+
+# vim:set ts=2 sw=2 et:

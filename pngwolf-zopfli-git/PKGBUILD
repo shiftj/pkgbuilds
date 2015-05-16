@@ -1,0 +1,63 @@
+# Maintainer: shiftj github.com/shiftj
+
+pkgname=pngwolf-zopfli-git
+pkgver=r32.67c4021
+pkgrel=1
+pkgdesc="pngwolf uses a genetic algorithm to find PNG scanline filter combinations that compress well (compiled using 7zip 9.20)"
+arch=('i686' 'x86_64')
+url="http://bjoern.hoehrmann.de/pngwolf/"
+license=('custom')
+depends=('')
+makedepends=('git' 'sed')
+provides=('pngwolf-zopfli')
+source=('http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'pngwolf-zopfli::git://github.com/jibsen/pngwolf' 'git://github.com/google/zopfli/')
+md5sums=('2b6a28fd06d4c7c4d0bb39c92b2b376c'
+         '44d667c142d7cda120332623eab69f40'
+         'SKIP'
+         'SKIP')
+
+pkgver() {
+  cd ${pkgname%-git}
+  printf  "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd ${pkgname%-git}
+
+  ln -s ../zopfli zopfli
+  ln -s ../galib247 galib
+  ln -s ../zlib-1.2.8 zlib
+  
+  # fix galib247 compilation error
+  sed -i \
+    -e 's/initializer(/this->initializer(/g' \
+    -e 's/mutator(/this->mutator(/g' \
+    -e 's/comparator(/this->comparator(/g' \
+    -e 's/crossover(/this->crossover(/g' \
+    ../galib247/ga/GA?DArrayGenome.C
+
+  msg2 "Running cmake..."
+  mkdir -p build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+}
+
+build() {
+	cd ${pkgname%-git}/build
+
+	msg "Starting build process."
+  make CXXFLAGS="${CXXFLAGS}" || return 1
+}
+
+package() {
+  cd ${pkgname%-git}/build
+
+	msg2 'Installing...'
+
+	install -Dm755 ${pkgname%-zopfli-git} ${pkgdir}/usr/bin/${pkgname%-git}
+
+  pwd
+	install -Dm644 ../README ${pkgdir}/usr/share/doc/${pkgname%-git}/README
+}
+
+# vim:set ts=2 sw=2 et:

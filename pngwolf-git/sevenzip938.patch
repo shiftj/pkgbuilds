@@ -1,0 +1,21 @@
+diff -pur 7zip/CPP/7zip/Common/StreamObjects.cpp
+--- 7zip/CPP/7zip/Common/StreamObjects.cpp	2015-05-15 02:32:18.316118781 +0200
++++ 7zip/CPP/7zip/Common/StreamObjects.cpp	2015-05-15 02:33:21.580430471 +0200
+@@ -36,7 +36,7 @@
+     default: return STG_E_INVALIDFUNCTION;
+   }
+   if (offset < 0)
+-    return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
++    return STG_E_INVALIDFUNCTION;
+   _pos = offset;
+   if (newPosition)
+     *newPosition = offset;
+@@ -242,7 +242,7 @@
+     default: return STG_E_INVALIDFUNCTION;
+   }
+   if (offset < 0)
+-    return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
++    return STG_E_INVALIDFUNCTION;
+   _pos = offset;
+   if (newPosition)
+     *newPosition = offset;

@@ -1,6 +1,6 @@
 # Maintainer: shiftj github.com/shiftj
 
-pkgname=pngwolf-git
+pkgname=pngwolf920-git
 pkgver=r14.ff9764b
 pkgrel=1
 pkgdesc="pngwolf uses a genetic algorithm to find PNG scanline filter combinations that compress well (compiled using 7zip 9.20)"
@@ -12,22 +12,19 @@ makedepends=('git' 'sed')
 provides=('pngwolf')
 conflicts=('pngwolf')
 replaces=('pngwolf')
-#source=('http://www.7-zip.org/a/7z920.tar.bz2' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf')
-source=('http://www.7-zip.org/a/7z938-src.7z' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf' 'sevenzip.patch')
-#source=('http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/jibsen/pngwolf' 'git://github.com/google/zopfli/')
-md5sums=('5e8e5b3777239d44852556899e41b973'
+source=('http://www.7-zip.org/a/7z920.tar.bz2' 'http://lancet.mit.edu/ga/dist/galib247.tgz' 'http://zlib.net/current/zlib-1.2.8.tar.gz' 'git://github.com/hoehrmann/pngwolf')
+md5sums=('c63583eff4bceb4315228ff4881a7461'
          '2b6a28fd06d4c7c4d0bb39c92b2b376c'
          '44d667c142d7cda120332623eab69f40'
-         'SKIP'
-         '3cb16e20bff448e5925500eb1dc2df8f')
+         'SKIP')
 
 pkgver() {
-  cd ${pkgname%-git}
+  cd ${pkgname%920-git}
   printf  "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 prepare() {
-  cd ${pkgname%-git}
+  cd ${pkgname%920-git}
 
   mkdir -p 7zip
   ln -s ../../CPP  7zip/CPP
@@ -37,12 +34,12 @@ prepare() {
   
   # fix 'different line endings' error / 7zip src has windows (CRLF) line endings
   # this adds sed makedepend
-  # chmod needed for 7zip 9.38, adds write permissions
-  chmod +w 7zip/CPP/7zip/Common/StreamObjects.cpp
   # \x0d is CRLF end of line
   sed -i 's/\x0d$//' 7zip/CPP/7zip/Common/StreamObjects.cpp
+  sed -i 's/\x0d$//' 7zip/C/Alloc.h
+  sed -i 's/\x0d$//' 7zip/C/Alloc.c
  
-  patch -p 1 -d .. < ../sevenzip.patch
+  patch -p 1 -d .. < sevenzip920.patch
 
   # fix galib247 compilation error
   sed -i \
@@ -59,18 +56,18 @@ prepare() {
 }
 
 build() {
-	cd ${pkgname%-git}/build
+	cd ${pkgname%920-git}/build
 
 	msg "Starting build process."
   make CXXFLAGS="${CXXFLAGS}" || return 1
 }
 
 package() {
-  cd ${pkgname%-git}/build
+  cd ${pkgname%920-git}/build
 
 	msg2 'Installing...'
 
-	install -Dm755 ${pkgname%-git} ${pkgdir}/usr/bin/${pkgname%-git}
+	install -Dm755 ${pkgname%920-git} ${pkgdir}/usr/bin/${pkgname%-git}
 
 	install -Dm644 ../README ${pkgdir}/usr/share/doc/${pkgname%-git}/README
 }
