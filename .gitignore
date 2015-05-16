@@ -8,10 +8,12 @@
 # AUR metadata
 .AURINFO
 .SRCINFO
-pngnq/
-pngwolf/
 pkg/
 src/
 
 .flagged
 *.7z
+pngnq/
+pngwolf/
+zopfli/
+pngwolf-zopfli/
